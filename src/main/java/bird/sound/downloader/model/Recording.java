@@ -9,33 +9,33 @@ import lombok.Data;
 @Data
 public class Recording {
 
-    public String id;
-    public String gen;
-    public String sp;
-    public String ssp;
-    public String en;
-    public String rec;
-    public String cnt;
-    public String loc;
-    public String lat;
-    public String lng;
-    public String alt;
-    public String type;
-    public String url;
-    public String file;
+    private String id;
+    private String gen;
+    private String sp;
+    private String ssp;
+    private String en;
+    private String rec;
+    private String cnt;
+    private String loc;
+    private String lat;
+    private String lng;
+    private String alt;
+    private String type;
+    private String url;
+    private String file;
     @JsonProperty("file-name")
-    public String fileName;
-    public Sono sono;
-    public String lic;
-    public String q;
-    public String length;
-    public String time;
-    public String date;
-    public String uploaded;
-    public List<String> also;
-    public String rmk;
+    private String fileName;
+    private Sono sono;
+    private String lic;
+    private String q;
+    private String length;
+    private String time;
+    private String date;
+    private String uploaded;
+    private List<String> also;
+    private String rmk;
     @JsonProperty("bird-seen")
-    public String birdSeen;
+    private String birdSeen;
     @JsonProperty("playback-used")
-    public String playbackUsed;
+    private String playbackUsed;
 }

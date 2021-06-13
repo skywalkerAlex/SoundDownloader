@@ -3,16 +3,14 @@ package bird.sound.downloader;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import bird.sound.downloader.controller.DownloaderController;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @SpringBootApplication
+@EnableSwagger2
 public class DownloaderApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(DownloaderApplication.class, args);
-
-		DownloaderController.callTemp();
-
 	}
 
 }

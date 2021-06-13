@@ -4,9 +4,9 @@ import lombok.Data;
 
 @Data
 public class Sono {
-    public String small;
-    public String med;
-    public String large;
-    public String full;
+    private String small;
+    private String med;
+    private String large;
+    private String full;
 
 }
