@@ -36,12 +36,15 @@ public class XenoCantoController {
     @PostMapping("soundDetails")
     public ResponseEntity<InputStreamResource> retrieveSoundDetails(@Valid @RequestBody RequestForm requestForm) {
 
-        ByteArrayInputStream input = downloaderService.soundRetriever(requestForm.getCountry(),
+        Vector<ByteArrayInputStream> input = downloaderService.soundRetriever(requestForm.getCountry(),
                 requestForm.getGenericNameOfSpecies());
-        if (input == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new InputStreamResource(input));
+        if (input == null || input.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new InputStreamResource(input.firstElement()));
         }
-        InputStreamResource file = new InputStreamResource(input);
+        Enumeration<ByteArrayInputStream> enumeration = input.elements();
+        SequenceInputStream allInputs = new SequenceInputStream(enumeration);
+
+        InputStreamResource file = new InputStreamResource(allInputs);
 
         return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
                 .contentType(MediaType.parseMediaType("application/csv")).body(file);
@@ -51,14 +54,13 @@ public class XenoCantoController {
     public ResponseEntity<InputStreamResource> retrieveAllData() {
         ByteArrayInputStream input = downloaderService.csvHeaders();
         Vector<ByteArrayInputStream> vector = new Vector<>();
-        SequenceInputStream allInputs = null;
 
         vector.add(input);
         Stream.of(EnumeratedCountries.values())
-                .forEach(country -> vector.add(downloaderService.soundRetriever(country.toString(), null)));
+                .forEach(country -> vector.addAll(downloaderService.soundRetriever(country.toString(), null)));
 
         Enumeration<ByteArrayInputStream> enumeration = vector.elements();
-        allInputs = new SequenceInputStream(enumeration);
+        SequenceInputStream allInputs = new SequenceInputStream(enumeration);
 
         InputStreamResource file = new InputStreamResource(allInputs);
 

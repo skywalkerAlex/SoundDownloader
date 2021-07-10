@@ -1,10 +1,11 @@
 package bird.sound.downloader.service;
 
 import java.io.ByteArrayInputStream;
+import java.util.Vector;
 
 public interface XenoCantoDownloaderService {
 
-    public ByteArrayInputStream soundRetriever(String cnt, String gen);
+    public Vector<ByteArrayInputStream> soundRetriever(String cnt, String gen);
 
     public ByteArrayInputStream csvHeaders();
 }

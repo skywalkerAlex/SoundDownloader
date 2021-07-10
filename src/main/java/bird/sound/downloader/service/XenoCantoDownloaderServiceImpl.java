@@ -2,6 +2,7 @@ package bird.sound.downloader.service;
 
 import java.io.ByteArrayInputStream;
 import java.util.Arrays;
+import java.util.Vector;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -31,7 +32,7 @@ public class XenoCantoDownloaderServiceImpl implements XenoCantoDownloaderServic
 
     ObjectMapper mapper = new ObjectMapper();;
 
-    public ByteArrayInputStream soundRetriever(String cnt, String gen) {
+    public Vector<ByteArrayInputStream> soundRetriever(String cnt, String gen) {
         log.info("Requested a list of details from country : " + cnt);
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
@@ -43,18 +44,30 @@ public class XenoCantoDownloaderServiceImpl implements XenoCantoDownloaderServic
             url += "+gen:" + gen;
         }
         ResponseEntity<String> exchange = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
-        XenoCantoDto dto = new XenoCantoDto();
         if (exchange.getStatusCode() != HttpStatus.OK) {
             return null;
         }
+        XenoCantoDto dto = new XenoCantoDto();
+        int iterate = dto.getNumPages();
+        Vector<ByteArrayInputStream> inputList = new Vector<>();
         try {
-            dto = mapper.readValue(exchange.getBody(), XenoCantoDto.class);
+            while (iterate > 0) {
+                dto = mapper.readValue(exchange.getBody(), XenoCantoDto.class);
+                inputList.add(CsvHelper.createDataForCSV(dto));
+                if (iterate > 1) {
+                    exchange = restTemplate.exchange(url + "&page=" + iterate, HttpMethod.GET, entity, String.class);
+                    dto = mapper.readValue(exchange.getBody(), XenoCantoDto.class);
+                    inputList.add(CsvHelper.createDataForCSV(dto));
+                }
+                iterate--;
+            }
         } catch (JsonProcessingException e) {
             log.error("JsonProcessingException Error => " + e);
         }
+
         log.info("Got number of Recordings : " + dto.getNumRecordings());
 
-        return CsvHelper.createDataForCSV(dto);
+        return inputList;
     }
 
     @Override
